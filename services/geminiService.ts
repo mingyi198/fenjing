@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import type { Storyboard } from '../types';
+import type { Storyboard, Panel } from '../types';
 
 if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
@@ -96,5 +96,67 @@ export const generateStoryboardScript = async (storyIdea: string, aspectRatio: s
             throw new Error(`生成分镜失败。Gemini API 错误：${e.message}`);
         }
         throw new Error("生成分镜时发生未知错误。");
+    }
+};
+
+export const generateStoryBranch = async (
+    contextPanels: Storyboard,
+    branchIdea: string
+): Promise<Storyboard> => {
+    const model = 'gemini-2.5-flash';
+    const contextString = JSON.stringify(contextPanels, null, 2);
+
+    const fullPrompt = `你是一位专业的电影分镜师。一个故事正在进行中，现在需要从一个特定的点开始创作一个全新的“故事分支”。
+
+    这是主线故事的上下文，直到分支点（分镜 ${contextPanels.length}）：
+    \`\`\`json
+    ${contextString}
+    \`\`\`
+
+    现在，用户想要从这个点开始，探索一个全新的故事走向。新的故事构思是：“${branchIdea}”
+
+    **至关重要的规则**:
+    1.  **视觉一致性 (ABSOLUTE HIGHEST PRIORITY)**: 新生成的所有分镜，必须在视觉上（场景、角色样貌、颜色、风格等）与上面提供的上下文保持绝对一致。请仔细分析上下文中的 "scene" 和 "imagePrompt" 来推断并锁定核心视觉元素（核心主体和核心场景），并在所有新分镜的描述和提示词中严格、完整地复用它们。
+    2.  **故事延续性**: 新分支的第一个镜头应该自然地从分镜 ${contextPanels.length} 的结尾开始，然后根据新的故事构思“${branchIdea}”展开。
+    3.  **重新编号**: 新分支的分镜编号应从 ${contextPanels.length + 1} 开始，并依次递增。
+    4.  **完整结构**: 请为这个新的分支生成一个包含多幕（例如，2-4个镜头）的完整小故事，使其有自己的发展和结局。
+    5.  **输出格式**: 你必须只返回一个JSON数组，代表这个新的故事分支的所有分镜。不要返回任何其他文字或解释。
+
+    请根据新的故事构思，生成这个全新的、视觉一致的故事分支。`;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: model,
+            contents: fullPrompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            panel: { type: Type.INTEGER, description: "分镜编号。" },
+                            scene: { type: Type.STRING, description: "场景描述，必须与上下文保持一致。" },
+                            camera: { type: Type.STRING, description: "镜头描述。" },
+                            action: { type: Type.STRING, description: "动作描述。" },
+                            dialogue: { type: Type.STRING, description: "对话，没有则为空字符串。" },
+                            imagePrompt: { type: Type.STRING, description: "中文文生图提示词，必须与上下文视觉风格保持一致。" },
+                            videoPrompt: { type: Type.STRING, description: "中文图生视频提示词，必须与上下文视觉风格保持一致。" }
+                        },
+                        required: ["panel", "scene", "camera", "action", "dialogue", "imagePrompt", "videoPrompt"],
+                    },
+                },
+            },
+        });
+
+        const jsonText = response.text.trim();
+        const newBranch: Storyboard = JSON.parse(jsonText);
+        return newBranch;
+    } catch (e) {
+        console.error("Error generating story branch:", e);
+        if (e instanceof Error) {
+            throw new Error(`生成故事分支失败。Gemini API 错误：${e.message}`);
+        }
+        throw new Error("生成故事分支时发生未知错误。");
     }
 };
