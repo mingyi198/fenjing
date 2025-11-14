@@ -1,0 +1,5 @@
+{
+  "name": "AI狗狗危险场景分镜生成器",
+  "description": "一个输入关于狗狗提醒主人危险的故事构思，并使用AI生成详细分镜脚本的应用程序。",
+  "requestFramePermissions": []
+}
