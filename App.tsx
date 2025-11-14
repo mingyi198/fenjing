@@ -14,6 +14,7 @@ const App: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [aspectRatio, setAspectRatio] = useState<'9:16' | '16:9'>('16:9');
     const [style, setStyle] = useState<string>('写实照片');
+    const [composition, setComposition] = useState<string>('不指定');
 
     const handleGenerate = useCallback(async () => {
         if (!storyIdea.trim()) {
@@ -25,7 +26,7 @@ const App: React.FC = () => {
         setStoryboard(null);
 
         try {
-            const result = await generateStoryboardScript(storyIdea, aspectRatio, style);
+            const result = await generateStoryboardScript(storyIdea, aspectRatio, style, composition);
             setStoryboard(result);
         } catch (e) {
             if (e instanceof Error) {
@@ -36,7 +37,7 @@ const App: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [storyIdea, aspectRatio, style]);
+    }, [storyIdea, aspectRatio, style, composition]);
 
     return (
         <div className="min-h-screen bg-slate-900 font-sans text-slate-200 flex flex-col items-center p-4 sm:p-6 lg:p-8">
@@ -52,12 +53,14 @@ const App: React.FC = () => {
                         setAspectRatio={setAspectRatio}
                         style={style}
                         setStyle={setStyle}
+                        composition={composition}
+                        setComposition={setComposition}
                     />
                     {error && <ErrorMessage message={error} />}
                     
                     <div className="mt-12">
                         {!isLoading && !storyboard && !error && <WelcomeMessage />}
-                        {storyboard && <StoryboardDisplay storyboard={storyboard} aspectRatio={aspectRatio} style={style} />}
+                        {storyboard && <StoryboardDisplay storyboard={storyboard} aspectRatio={aspectRatio} style={style} composition={composition} />}
                     </div>
                 </main>
             </div>

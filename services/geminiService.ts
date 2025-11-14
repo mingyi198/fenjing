@@ -6,13 +6,14 @@ if (!process.env.API_KEY) {
 }
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-export const generateStoryboardScript = async (storyIdea: string, aspectRatio: string, style: string): Promise<Storyboard> => {
+export const generateStoryboardScript = async (storyIdea: string, aspectRatio: string, style: string, composition: string): Promise<Storyboard> => {
     const model = 'gemini-2.5-flash';
     const fullPrompt = `用户想要一个关于狗狗提醒主人注意来自人或车辆危险的分镜脚本。
 
     请遵循以下规范：
     - 视觉风格: ${style}
     - 画面比例: ${aspectRatio}
+    - 镜头构图偏好: ${composition === '不指定' ? '无特殊偏好，请根据故事节奏自由选择最佳镜头。' : `请在脚本中优先或频繁使用“${composition}”风格的镜头构图，以突出特定氛围。`}
 
     具体的故事情节如下：“${storyIdea}”
 
@@ -61,7 +62,7 @@ export const generateStoryboardScript = async (storyIdea: string, aspectRatio: s
                             },
                             camera: { 
                                 type: Type.STRING, 
-                                description: "对镜头、角度、移动的描述。例如：'中景'，'狗眼特写'。应体现出所选的画面比例。"
+                                description: "对镜头、角度、移动的描述。例如：'中景'，'狗眼特写'。应体现出所选的画面比例和镜头构图偏好。"
                             },
                             action: { 
                                 type: Type.STRING, 

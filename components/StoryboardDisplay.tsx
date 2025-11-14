@@ -5,6 +5,7 @@ interface StoryboardDisplayProps {
     storyboard: Storyboard;
     aspectRatio: string;
     style: string;
+    composition: string;
 }
 
 const DetailRow: React.FC<{ label: string; content: string }> = ({ label, content }) => (
@@ -22,13 +23,15 @@ const PromptRow: React.FC<{ label: string; content: string }> = ({ label, conten
 );
 
 
-export const StoryboardDisplay: React.FC<StoryboardDisplayProps> = ({ storyboard, aspectRatio, style }) => {
+export const StoryboardDisplay: React.FC<StoryboardDisplayProps> = ({ storyboard, aspectRatio, style, composition }) => {
     return (
         <div className="space-y-6">
             <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-slate-100">您的分镜脚本</h2>
-                <p className="text-slate-400 mt-2">
-                    风格: <span className="font-semibold text-slate-300">{style}</span> | 画面比例: <span className="font-semibold text-slate-300">{aspectRatio}</span>
+                <p className="text-slate-400 mt-2 text-sm md:text-base">
+                    风格: <span className="font-semibold text-slate-300">{style}</span> | 
+                    画面比例: <span className="font-semibold text-slate-300">{aspectRatio}</span> |
+                    镜头构图: <span className="font-semibold text-slate-300">{composition}</span>
                 </p>
             </div>
             {storyboard.map((panel) => (

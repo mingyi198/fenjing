@@ -10,11 +10,14 @@ interface StoryInputFormProps {
     setAspectRatio: (ratio: '9:16' | '16:9') => void;
     style: string;
     setStyle: (style: string) => void;
+    composition: string;
+    setComposition: (composition: string) => void;
 }
 
 const styleOptions = ['写实照片', '美国电影写真', '印度电影写真', '赛博朋克'];
+const compositionOptions = ['不指定', '特写', '中景', '全景', '过肩镜头', '鸟瞰视角'];
 
-export const StoryInputForm: React.FC<StoryInputFormProps> = ({ storyIdea, setStoryIdea, onGenerate, isLoading, aspectRatio, setAspectRatio, style, setStyle }) => {
+export const StoryInputForm: React.FC<StoryInputFormProps> = ({ storyIdea, setStoryIdea, onGenerate, isLoading, aspectRatio, setAspectRatio, style, setStyle, composition, setComposition }) => {
     
     const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
@@ -38,7 +41,7 @@ export const StoryInputForm: React.FC<StoryInputFormProps> = ({ storyIdea, setSt
                 disabled={isLoading}
             />
 
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">
                         画面比例
@@ -72,6 +75,22 @@ export const StoryInputForm: React.FC<StoryInputFormProps> = ({ storyIdea, setSt
                         className="w-full bg-slate-900 border border-slate-600 rounded-md p-2 text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-200"
                     >
                         {styleOptions.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                    </select>
+                </div>
+                 <div>
+                    <label htmlFor="composition-select" className="block text-sm font-medium text-slate-300 mb-2">
+                        镜头构图
+                    </label>
+                    <select
+                        id="composition-select"
+                        value={composition}
+                        onChange={(e) => setComposition(e.target.value)}
+                        disabled={isLoading}
+                        className="w-full bg-slate-900 border border-slate-600 rounded-md p-2 text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-200"
+                    >
+                        {compositionOptions.map((opt) => (
                             <option key={opt} value={opt}>{opt}</option>
                         ))}
                     </select>
