@@ -101,10 +101,15 @@ export const generateStoryboardScript = async (storyIdea: string, aspectRatio: s
 
 export const generateStoryBranch = async (
     contextPanels: Storyboard,
-    branchIdea: string
+    branchIdea: string,
+    emotion: string
 ): Promise<Storyboard> => {
     const model = 'gemini-2.5-flash';
     const contextString = JSON.stringify(contextPanels, null, 2);
+
+    const emotionInstruction = emotion === '不指定' 
+        ? '' 
+        : `2. **核心情感基调**: 这个故事分支必须强烈地围绕“${emotion}”这个情绪展开。请在角色的动作、面部表情、对话（如果有）以及镜头的运用中，都突出和放大这种情绪，创造出极具戏剧张力的情节。`;
 
     const fullPrompt = `你是一位专业的电影分镜师。一个故事正在进行中，现在需要从一个特定的点开始创作一个全新的“故事分支”。
 
@@ -117,10 +122,11 @@ export const generateStoryBranch = async (
 
     **至关重要的规则**:
     1.  **视觉一致性 (ABSOLUTE HIGHEST PRIORITY)**: 新生成的所有分镜，必须在视觉上（场景、角色样貌、颜色、风格等）与上面提供的上下文保持绝对一致。请仔细分析上下文中的 "scene" 和 "imagePrompt" 来推断并锁定核心视觉元素（核心主体和核心场景），并在所有新分镜的描述和提示词中严格、完整地复用它们。
-    2.  **故事延续性**: 新分支的第一个镜头应该自然地从分镜 ${contextPanels.length} 的结尾开始，然后根据新的故事构思“${branchIdea}”展开。
-    3.  **重新编号**: 新分支的分镜编号应从 ${contextPanels.length + 1} 开始，并依次递增。
-    4.  **完整结构**: 请为这个新的分支生成一个包含多幕（例如，2-4个镜头）的完整小故事，使其有自己的发展和结局。
-    5.  **输出格式**: 你必须只返回一个JSON数组，代表这个新的故事分支的所有分镜。不要返回任何其他文字或解释。
+    ${emotionInstruction}
+    ${emotion === '不指定' ? '2.' : '3.'}  **故事延续性**: 新分支的第一个镜头应该自然地从分镜 ${contextPanels.length} 的结尾开始，然后根据新的故事构思“${branchIdea}”展开。
+    ${emotion === '不指定' ? '3.' : '4.'}  **重新编号**: 新分支的分镜编号应从 ${contextPanels.length + 1} 开始，并依次递增。
+    ${emotion === '不指定' ? '4.' : '5.'}  **完整结构**: 请为这个新的分支生成一个包含多幕（例如，2-4个镜头）的完整小故事，使其有自己的发展和结局。
+    ${emotion === '不指定' ? '5.' : '6.'}  **输出格式**: 你必须只返回一个JSON数组，代表这个新的故事分支的所有分镜。不要返回任何其他文字或解释。
 
     请根据新的故事构思，生成这个全新的、视觉一致的故事分支。`;
 

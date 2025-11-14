@@ -9,7 +9,7 @@ interface StoryboardDisplayProps {
     aspectRatio: string;
     style: string;
     composition: string;
-    onGenerateBranch: (panelIndex: number, branchIdea: string) => Promise<void>;
+    onGenerateBranch: (panelIndex: number, branchIdea: string, emotion: string) => Promise<void>;
     storyboardBranches: Record<number, Storyboard>;
     isBranching: number | null;
     branchError: string | null;
@@ -99,8 +99,8 @@ export const StoryboardDisplay: React.FC<StoryboardDisplayProps> = ({
                         {activeBranchForm === panel.panel && (
                             <StoryBranchForm
                                 panelIndex={index}
-                                onGenerate={async (idx, branchIdea) => {
-                                    await onGenerateBranch(idx, branchIdea);
+                                onGenerate={async (idx, branchIdea, emotion) => {
+                                    await onGenerateBranch(idx, branchIdea, emotion);
                                     setActiveBranchForm(null);
                                 }}
                                 isLoading={isBranching === index}

@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { LoadingSpinner } from './LoadingSpinner';
 
+const emotionOptions = ['不指定', '夸张害怕', '夸张担心', '夸张惊吓', '夸张嘲笑', '夸张怒视', '夸张畏缩', '夸张发抖', '夸张开心', '夸张流泪', '夸张委屈'];
+
 interface StoryBranchFormProps {
     panelIndex: number;
-    onGenerate: (panelIndex: number, branchIdea: string) => Promise<void>;
+    onGenerate: (panelIndex: number, branchIdea: string, emotion: string) => Promise<void>;
     isLoading: boolean;
     onCancel: () => void;
 }
 
 export const StoryBranchForm: React.FC<StoryBranchFormProps> = ({ panelIndex, onGenerate, isLoading, onCancel }) => {
     const [branchIdea, setBranchIdea] = useState('');
+    const [emotion, setEmotion] = useState(emotionOptions[0]);
 
     const handleSubmit = () => {
         if (branchIdea.trim() && !isLoading) {
-            onGenerate(panelIndex, branchIdea);
+            onGenerate(panelIndex, branchIdea, emotion);
         }
     };
 
@@ -40,6 +43,24 @@ export const StoryBranchForm: React.FC<StoryBranchFormProps> = ({ panelIndex, on
                 disabled={isLoading}
                 autoFocus
             />
+            
+            <div className="mt-4">
+                <label htmlFor={`emotion-select-${panelIndex}`} className="block text-sm font-medium text-slate-300 mb-2">
+                    人物面部情绪
+                </label>
+                <select
+                    id={`emotion-select-${panelIndex}`}
+                    value={emotion}
+                    onChange={(e) => setEmotion(e.target.value)}
+                    disabled={isLoading}
+                    className="w-full bg-slate-900 border border-slate-600 rounded-md p-2 text-slate-200 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-200"
+                >
+                    {emotionOptions.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                </select>
+            </div>
+
             <div className="mt-3 flex justify-end gap-3">
                 <button
                     onClick={onCancel}

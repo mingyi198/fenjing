@@ -47,7 +47,7 @@ const App: React.FC = () => {
         }
     }, [storyIdea, aspectRatio, style, composition]);
 
-    const handleGenerateBranch = useCallback(async (panelIndex: number, branchIdea: string) => {
+    const handleGenerateBranch = useCallback(async (panelIndex: number, branchIdea: string, emotion: string) => {
         if (!storyboard || !branchIdea.trim()) {
             setBranchError("无法创建分支：缺少主脚本或新的故事构思。");
             return;
@@ -59,7 +59,7 @@ const App: React.FC = () => {
 
         try {
             const contextPanels = storyboard.slice(0, panelIndex + 1);
-            const newBranch = await generateStoryBranch(contextPanels, branchIdea);
+            const newBranch = await generateStoryBranch(contextPanels, branchIdea, emotion);
 
             setStoryboardBranches(prevBranches => ({
                 ...prevBranches,
